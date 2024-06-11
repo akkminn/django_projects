@@ -1,0 +1,27 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    {{title}}
+{% endblock %}
+{% load static %}
+
+{% block body %}
+    
+    {{ entry|safe }}
+
+    <div class="container mt-3">
+        <div class="d-flex justify-content-center align-items-center">
+            <form action="{% url 'edit' %}" method="POST" class="me-2 pr-2">
+                {% csrf_token %}
+                <input type="hidden" value="{{ title }}" name="entry_title">
+                <button type="submit" class="btn btn-primary">Edit</button>
+            </form>
+            <form action="{% url 'delete' title %}" method="POST" class="pl-2">
+                {% csrf_token %}
+                <input type="hidden" value="{{ title }}" name="entry_title">
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
