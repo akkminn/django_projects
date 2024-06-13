@@ -24,6 +24,7 @@ class DeatailsView(generic.DetailView):
         return super().get_queryset()
     
 
+
 def login_view(request):
     if request.method == "POST":
 
