@@ -1,0 +1,26 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    {% if not watchlist %}
+        <h3>No watchlists yet!</h3>
+    {% else %}
+        {% for list in watchlist %}
+            <div class="container row-50 px-5 py-3">
+                <div class="row flex-row-reverse align-items-center justify-content-center rounded-3 border shadow-lg">
+                    <div class="col-10 col-sm-8 col-lg-5">
+                        <img src="{{list.imageURL }}" class="d-block mx-lg-auto img-fluid" alt="Bootstrap Themes" width="350" height="250" loading="lazy">
+                    </div>
+                    <div class="col-lg-6">
+                        <h2 class="display-10 fw-bold text-body-emphasis lh-1 mb-3">{{ list.title }}</h2>
+                        <h6>Price: ${{ list.start_bid }}</h6>
+                        <p class="">{{ list.description }} </p>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                            <a href="{% url 'listing' list.id %}" class="btn btn-primary btn-lg px-4 me-md-2">View Item</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% endfor %}
+    {% endif %}
+{% endblock %}
