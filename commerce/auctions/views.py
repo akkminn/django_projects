@@ -23,7 +23,7 @@ class DeatailsView(generic.DetailView):
     context_object_name = "list"
     
     def get_queryset(self):
-        return super().get_queryset()
+        return AuctionList.objects.filter(is_active=True)
     
 class WatchListView(generic.ListView):
     model = AuctionList
@@ -45,6 +45,53 @@ def remove_from_watchlist(request, list_id):
     request.user.watchlist.remove(auction)
     return HttpResponseRedirect(reverse("listing", args=(list_id, )))
 
+
+@login_required
+def create(request):
+    if request.method == "POST":
+
+        # Get the data
+        title = request.POST["title"]
+        description = request.POST["description"]
+        bid = request.POST["bid"]
+        image_url = request.POST["imageURL"]
+        category = request.POST["category"]
+
+        bid = Bid(
+            bid=int(bid),
+            user=request.user
+        )
+        bid.save()
+
+        if category == 'None':
+            new_list = AuctionList(
+                title = title,
+                description = description,
+                start_bid = bid,
+                imageURL = image_url,
+                owner = request.user,
+                category = None
+            )
+            new_list.save()
+        
+        else:
+            categorydata = Category.objects.get(name=category)
+            new_list = AuctionList(
+                title = title,
+                description = description,
+                start_bid = bid,
+                imageURL = image_url,
+                owner = request.user,
+                category = categorydata
+            )
+            new_list.save()
+
+        return HttpResponseRedirect(reverse("index")) 
+    
+    categories = Category.objects.all()
+    return render(request, "auctions/create.html", {
+        "categories": categories
+    })
 
 
 def login_view(request):

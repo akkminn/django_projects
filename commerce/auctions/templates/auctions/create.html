@@ -1,0 +1,39 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    
+    <form action="{% url 'create' %}" method="post" class="w-50 mx-auto my-2 needs-validated">
+        <h2>Create a Listing</h2>
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="title" class="form-label">Listing title</label>
+            <input type="text" class="form-control" name="title" id="title" placeholder="Iphone 14" aria-label="default" required>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" name="description" id="description" rows="3" placeholder="The Dynamic Island, 48MP camera, thinner design, and USB-C port are the most notable upgrades from the iPhone 14."></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="bid" class="form-label">Starting bid</label>
+            <input type="text" class="form-control" name="bid" id="bid" placeholder="1599" aria-label="default" required>
+        </div>
+        <div class="mb-3">
+            <label for="imageURL" class="form-label">Image's URL</label>
+            <input type="text" class="form-control" name="imageURL" id="imageURL" placeholder="" aria-label="default" required>
+        </div>
+        <label for="category" class="form-label">Choose a category</label>
+        <select id="category" name="category" class="form-select" aria-label="Choose a category">
+            <option selected>None</option>
+            {% for category in categories %}
+            <option value="{{ category }}">{{ category }}</option>
+            {% endfor %}
+        </select>
+        <div class="my-3  mx-auto text-center">
+            <input type="submit" value="Create Listing" class="px-5 btn btn-primary" aria-label="default">        
+        </div>
+    </form>
+    
+    
+
+
+{% endblock %}

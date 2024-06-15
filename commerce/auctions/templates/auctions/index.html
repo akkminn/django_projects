@@ -8,11 +8,11 @@
             <div class="container row-80 px-4 py-5">
                 <div class="row  flex-lg-row-reverse align-items-center rounded-3 border shadow-lg">
                     <div class="col-10 col-sm-8 col-lg-5">
-                        <img src="{{list.imageURL }}" class="d-block mx-lg-auto img-fluid" alt="Bootstrap Themes" width="700" height="500" loading="lazy">
+                        <img src="{{ list.imageURL }}" class="d-block mx-lg-auto img-fluid" alt="{{ list.title}}" width="700" height="500" loading="lazy">
                     </div>
                     <div class="col-lg-6">
-                        <h1 class="display-5 fw-bold text-body-emphasis lh-1 mb-3">{{ list.title }}</h1>
-                        <h4>Price: ${{ list.start_bid }}</h4>
+                        <h2 class="display-6 fw-bold text-body-emphasis lh-1 mb-3">{{ list.title }}</h1>
+                        <h4>Price: ${{ list.start_bid.bid }}</h4>
                         <p class="lead">{{ list.description }} </p>
                         <div class="d-grid gap-2 d-md-flex justify-content-md-start">
                             <a href="{% url 'listing' list.id %}" class="btn btn-primary btn-lg px-4 me-md-2">View Item</a>
@@ -21,7 +21,6 @@
                 </div>
             </div>
         
-            <div class="divider"></div>
         {% endfor %}
     {% endif %}
 {% endblock %}
