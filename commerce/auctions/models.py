@@ -16,7 +16,7 @@ class Bid(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bidder')
     
     def __str__(self):
-        return f"{self.bid}; User: {self.user}"
+        return f"{self.bid}; User: {self.user}; "
     
 
 class AuctionList(models.Model):
@@ -26,14 +26,17 @@ class AuctionList(models.Model):
     is_active = models.BooleanField(default=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="list_owner")
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True, related_name='category')
-    start_bid = models.ForeignKey(Bid, on_delete=models.CASCADE, blank=True, null=True, related_name="start_bid")
+    current_bid = models.ForeignKey(Bid, on_delete=models.CASCADE, blank=True, null=True, related_name="current_bid")
     time = models.DateTimeField(auto_now_add=True)  # Auto add current datetime
     watchlists = models.ManyToManyField(User, blank=True, related_name='watchlist')
     
     def __str__(self):
-        watchlist_count = self.watchlists.count()
-        return f"{self.title}; Description: {self.description}; Owner: {self.owner}; Category: {self.category}; Starting Bid: {self.start_bid}; Is active: {self.is_active}; Watchlist Count: {watchlist_count}"
+        return f"{self.title}; Description: {self.description}; Owner: {self.owner}; Category: {self.category}; Current Bid: {self.current_bid}; Is active: {self.is_active}"
     
+    @classmethod
+    def get_none_category(cls):
+        return cls.objects.filter(category__isnull=True)
+
     class Meta:
         ordering = ['-is_active', 'title']
         verbose_name_plural = "Auction Listings"

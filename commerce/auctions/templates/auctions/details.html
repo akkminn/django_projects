@@ -2,17 +2,43 @@
 
 {% block body %}
 
+    {% if message %}
+        {% if success %}
+            <div class="alert alert-success w-50 mx-auto my-3 alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% else %}
+            <div class="alert alert-danger w-50 mx-auto my-3 alert-dismissible fade show" role="alert">
+            {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            
+        {% endif %}
+    {% endif %}
+
 <div class="px-2 pt-3 my-2 text-center border-bottom">
-    <h1 class="display-4 fw-bold text-body-emphasis">{{ list.title }}</h1>
+    <h2 class="display-4 fw-bold text-body-emphasis">{{ list.title }}</h2>
     <div class="col-lg-7 mx-auto">
         <p class="lead mb-4">{{ list.description }} </p>
         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mb-3">
-            {% if list in user.watchlist.all %}
+        {% if user.is_authenticated and list.is_active %}
+            {% if list in user.watchlist.all  %}
                 <a href="{% url 'remove' list.id %}" class="btn btn-danger btn-lg px-4 me-md-2">Remove from Watchlist</a>
             {% else %}
                 <a href="{% url 'add' list.id %}" class="btn btn-primary btn-lg px-4 me-md-2">Add to Watchlist</a>
             {% endif %}
-            <button type="button" class="btn btn-danger btn-lg px-4">Close Auction</button>
+        {% endif %}
+            {% if user == list.owner %}
+                {% if list.is_active %}
+                <form action="{% url 'close' list.id %}">
+                    {% csrf_token %}
+                    <input type="submit" value="Close Auction" class="btn btn-danger btn-lg px-4 me-md-2">
+                </form>
+                {% else %}
+                    <button type="" value="" class="btn btn-secondary btn-lg px-4 me-md-2">Closed</button>
+                {% endif %}
+            {% endif %}
         </div>
     </div>
     <div class="overflow-hidden">
@@ -23,21 +49,42 @@
 
     <div class="container col-xl-10 col-xxl-8 px-4 py-3">
         <div class="row align-items-center g-lg-5 py-2">
+
             <div class="col-lg-7 text-center text-lg-start">
-                <h6 class="display-6 fw-bold lh-1 text-body-emphasis mb-2">Deatils</h6>
-                <p class="col-lg-10 fs-4">{{ list.description }} </p>
-            </div>
-            <div class="col-md-10 mx-auto col-lg-5">
-                <form class="p-4 p-md-5 border rounded-3 bg-body-tertiary">
-                    <p class="p-1 mb-1 text-start">description of bids so far</p>
+                <h6 class="display-6 fw-semibold lh-1 text-body-emphasis mb-2">Deatils</h6>
+                <ul>
+                    <li class="col-lg-10 fs-4 mb-0"> Current bid: <span class="fw-medium">$ {{ list.current_bid.bid }}</span></li>
+                    <li class="col-lg-10 fs-4 mb-0"> Listed by: <span class="fw-medium">{{ list.owner.username }}</span></li>
+                    {% if not list.category.name %}
+                        <li class="col-lg-10 fs-4 mb-0"> Category: <span class="fw-medium">None</span></li>
+                    {% else %}
+                        <li class="col-lg-10 fs-4 mb-0"> Category: <span class="fw-medium">{{ list.category.name }}</span></li>
+                    {% endif %}
+                    <li class="col-lg-10 fs-4 mb-0"> Date: <span class="fw-medium">{{ list.time }}</span></li>
+                </ul>
                 
-                    <div class="form-floating mb-3">
-                        <input class="form-control" id="floatingInput" placeholder="1000">
-                        <label for="floatingInput">Place a Bid</label>
-                    </div>
-                    <button class="w-100 btn btn-lg btn-primary" type="submit">Place Now</button>
-                </form>
             </div>
+            {% if list.is_active %}
+                {% if user.is_authenticated %}
+                    <div class="col-md-10 mx-auto col-lg-5">
+                        <form method="post" class="p-4 p-md-5 border rounded-3 bg-body-tertiary" action="{% url 'placebid' list.id %}">
+                            {% csrf_token %}
+                            <p class="mb-1 text-start">Make a bid more than current one!</p>
+                        
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="newBid" id="newBid" placeholder="1599" aria-label="default" required>
+                                <label for="newBid">Place a Bid</label>
+                            </div>
+                            <button class="w-100 btn btn-lg btn-primary" type="submit">Place Now</button>
+                        </form>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="col-md-10 p-4 p-md-5  border rounded-3 alert alert-success mx-auto col-lg-5">
+                    <p class="text-center mb-1"> <span class="fw-bold fs-3"> {{ list.current_bid.user }} </span> won this auctions</p>
+                </div>
+            {% endif %}
+
         </div>
     </div>
     <hr class="my-3">

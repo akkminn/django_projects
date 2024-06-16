@@ -1,3 +1,4 @@
+from queue import Full
 from typing import Any
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
@@ -7,14 +8,14 @@ from django.urls import reverse
 from django.views import generic
 from django.contrib.auth.decorators import login_required
 
-
 from .models import User, AuctionList, Bid, Comment, Category
-
 
 def index(request):
     active_list = AuctionList.objects.filter(is_active=True)
+    categories = Category.objects.all()
     return render(request, "auctions/index.html", {
-        "active_list": active_list
+        "active_list": active_list,
+        "categories": categories
     })
 
 class DeatailsView(generic.DetailView):
@@ -24,6 +25,7 @@ class DeatailsView(generic.DetailView):
     
     def get_queryset(self):
         return AuctionList.objects.filter(is_active=True)
+
     
 class WatchListView(generic.ListView):
     model = AuctionList
@@ -45,6 +47,24 @@ def remove_from_watchlist(request, list_id):
     request.user.watchlist.remove(auction)
     return HttpResponseRedirect(reverse("listing", args=(list_id, )))
 
+def displayByCategory(request):
+    if request.method == "POST":
+        category = request.POST["category"]        
+        categories = Category.objects.all()
+        if category == "None":
+            active_listings = AuctionList.get_none_category().filter(is_active=True)
+            return render(request, "auctions/index.html", {
+            "active_list": active_listings,
+            "categories": categories
+        })
+        else:
+            categorylist = Category.objects.get(name=category)
+            active_listings = AuctionList.objects.filter(is_active=True, category=categorylist)
+            return render(request, "auctions/index.html", {
+                "active_list": active_listings,
+                "categories": categories
+            })
+
 
 @login_required
 def create(request):
@@ -63,11 +83,11 @@ def create(request):
         )
         bid.save()
 
-        if category == 'None':
+        if category == "None":
             new_list = AuctionList(
                 title = title,
                 description = description,
-                start_bid = bid,
+                current_bid = bid,
                 imageURL = image_url,
                 owner = request.user,
                 category = None
@@ -79,20 +99,62 @@ def create(request):
             new_list = AuctionList(
                 title = title,
                 description = description,
-                start_bid = bid,
+                current_bid = bid,
                 imageURL = image_url,
                 owner = request.user,
                 category = categorydata
             )
             new_list.save()
 
-        return HttpResponseRedirect(reverse("index")) 
+        categories = Category.objects.all()
+        return HttpResponseRedirect(reverse("index"), categories) 
     
     categories = Category.objects.all()
     return render(request, "auctions/create.html", {
         "categories": categories
     })
 
+@login_required
+def close(request, list_id):
+    list = get_object_or_404(AuctionList, id=list_id)
+    list.is_active = False
+    list.save()
+    if request.user == list.current_bid.user:
+        return render(request, "auctions/details.html", {
+            "message": "Congrats! You won the auctions.",
+            "success": True,
+            "list": list
+        })
+    else:
+        return render(request, "auctions/details.html", {
+            "message": "You successfully closed the auction.",
+            "success": True,
+            "list": list
+        })
+    
+@login_required
+def place(request, list_id):
+    list = get_object_or_404(AuctionList, id=list_id)
+    newbid = int(request.POST["newBid"])
+    if newbid > list.current_bid.bid:
+        updateBid = Bid(
+            bid= newbid,
+            user = request.user
+        )
+        updateBid.save()
+        list.current_bid = updateBid
+        list.save()
+        return render(request, "auctions/details.html", {
+            "message": "You successfully placed a new bid.",
+            "success": True,
+            "list": list
+        })
+    else:
+        return render(request, "auctions/details.html", {
+        "message": "Failed! Make sure you bid more amount than current bid!",
+        "success": False,
+        "list": list
+    })
 
 def login_view(request):
     if request.method == "POST":

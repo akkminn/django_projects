@@ -23,7 +23,7 @@
         </div>
         <label for="category" class="form-label">Choose a category</label>
         <select id="category" name="category" class="form-select" aria-label="Choose a category">
-            <option selected>None</option>
+            <option>None</option>
             {% for category in categories %}
             <option value="{{ category }}">{{ category }}</option>
             {% endfor %}

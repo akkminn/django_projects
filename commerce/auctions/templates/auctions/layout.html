@@ -8,14 +8,9 @@
         <link href="{% static 'auctions/styles.css' %}" rel="stylesheet">
     </head>
     <body>
-        {% comment %} <div>
-            {% if user.is_authenticated %}
-                Signed in as <strong>{{ user.username }}</strong>.
-            {% else %}
-                Not signed in.
-            {% endif %}
-        </div> {% endcomment %}
+        
         <div class="container">
+          
             <nav class="navbar navbar-expand-lg bg-body-tertiary rounded" aria-label="Auctions navbar">
               <div class="container-fluid">
                 <a class="navbar-brand" href="#"><h1>Auctions</h1></a>
@@ -36,16 +31,7 @@
                         <a class="nav-link active" aria-current="page" href="{% url 'create' %}">Create Listings</a>
                       </li>
                     {% endif %}
-                    
-                
-                    {% comment %} <li class="nav-item dropdown">
-                      <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">Dropdown</a>
-                      <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Action</a></li>
-                        <li><a class="dropdown-item" href="#">Another action</a></li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li>
-                      </ul>
-                    </li> {% endcomment %}
+  
                   </ul>
                   <form class="d-flex" role="search">
                     <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
@@ -68,14 +54,23 @@
                   </li>
                 </ul>
                 {% endif %}
-                
-
+            
 
                 </div>
               </div>
             </nav>
+            <div>
+              {% if user.is_authenticated %}
+                  Signed in as <strong>{{ user.username }}</strong>.
+              {% else %}
+                  Not signed in.
+              {% endif %}
+            </div> 
         </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         {% block body %}
         {% endblock %}
     </body>
+    
+
 </html>
