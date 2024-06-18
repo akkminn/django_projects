@@ -87,31 +87,41 @@
 
         </div>
     </div>
-    <hr class="my-3">
 
     <div class="row d-flex justify-content-center">
         <div class="col-md-6 col-lg-8">
-            <div class="card shadow-1 border" style="background-color: #f0f2f5;">
-                <div class="card-body p-4">
-                    <div class="form-outline mb-4 d-flex ">
-                        <input type="text" id="addANote" class="form-control" placeholder="Type comment..."/>
-                        <a href="#" class="btn btn-primary mx-2">Post</a>
-                    </div>
+            {% if user.is_authenticated %}
+            <div class="card shadow-1 border" style="background-color: #dcdcdc;">
+                <div class="card-body px-4">
+                
                     
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="d-flex justify-content-between">
+                    <form method="post" action="{% url 'comment' list.id %}" class="form-outline mb-4 d-flex ">
+                        {% csrf_token %}
+                        <input type="text" id="comment" name="comment" class="form-control" placeholder="Type comment..."/>
+                        <button type="submit" class="btn btn-primary mx-2 px-3">Post</button>
+                    </form>
+                    
+                    
+                    {% for comment in comments %}
+                    <div class="card my-2">
+                        <div class="mx-3 my-0">
+                            <div class="d-flex justify-content-start">
                                 <div class="d-flex flex-row align-items-center">
-                                <img src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(4).webp" alt="avatar" width="25" height="25"/>
-                                <p class="small mb-0 ms-2">Martha</p>
+                                    <i class="fas fa-user"></i>
+                                    <p class="small mb-1 ms-2 fs-5">{{ comment.user }}</p>
+                                    <p class="small mb-0 ms-2">{{ comment.time }}</p>
+                                </div>
                             </div>
                         </div>
                         <div class="card-body">
-                            <p class="p-0 text-start">Type your note, and hit enter to add it</p>
+                            <p class="p-0 text-start">{{ comment.comment }}</p>
                         </div>
-                      </div>
+                    </div>
+                    {% endfor %}
+                    
                 </div>
             </div>
+            {% endif %}
         </div>
     </div>
 

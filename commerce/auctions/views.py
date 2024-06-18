@@ -17,16 +17,15 @@ def index(request):
         "active_list": active_list,
         "categories": categories
     })
-
-class DeatailsView(generic.DetailView):
-    model = AuctionList
-    template_name = "auctions/details.html"
-    context_object_name = "list"
     
-    def get_queryset(self):
-        return AuctionList.objects.filter(is_active=True)
+def details(request, list_id):
+    list = get_object_or_404(AuctionList, id=list_id)
+    comments = Comment.objects.filter(auction_list=list)
+    return render(request, "auctions/details.html", {
+        "list": list,
+        "comments": comments
+    })
 
-    
 class WatchListView(generic.ListView):
     model = AuctionList
     template_name = "auctions/watchlists.html"
@@ -106,8 +105,7 @@ def create(request):
             )
             new_list.save()
 
-        categories = Category.objects.all()
-        return HttpResponseRedirect(reverse("index"), categories) 
+        return HttpResponseRedirect(reverse("index")) 
     
     categories = Category.objects.all()
     return render(request, "auctions/create.html", {
@@ -117,25 +115,29 @@ def create(request):
 @login_required
 def close(request, list_id):
     list = get_object_or_404(AuctionList, id=list_id)
+    comments = Comment.objects.filter(auction_list=list)
     list.is_active = False
     list.save()
     if request.user == list.current_bid.user:
         return render(request, "auctions/details.html", {
             "message": "Congrats! You won the auctions.",
             "success": True,
-            "list": list
+            "list": list,
+            "comments": comments
         })
     else:
         return render(request, "auctions/details.html", {
             "message": "You successfully closed the auction.",
             "success": True,
-            "list": list
+            "list": list,
+            "comments": comments
         })
     
 @login_required
 def place(request, list_id):
     list = get_object_or_404(AuctionList, id=list_id)
     newbid = int(request.POST["newBid"])
+    comments = Comment.objects.filter(auction_list=list)
     if newbid > list.current_bid.bid:
         updateBid = Bid(
             bid= newbid,
@@ -147,14 +149,29 @@ def place(request, list_id):
         return render(request, "auctions/details.html", {
             "message": "You successfully placed a new bid.",
             "success": True,
-            "list": list
+            "list": list,
+            "comments": comments
         })
     else:
         return render(request, "auctions/details.html", {
         "message": "Failed! Make sure you bid more amount than current bid!",
         "success": False,
-        "list": list
+        "list": list,
+        "comments": comments
     })
+
+def comment(request, list_id):
+    list = get_object_or_404(AuctionList, id=list_id)
+    comments = Comment.objects.filter(auction_list=list)
+    comment = request.POST["comment"]
+
+    newComment = Comment(
+        comment = comment,
+        user = request.user,
+        auction_list = list
+    )
+    newComment.save()
+    return HttpResponseRedirect(reverse("listing", args=(list_id, )), comments)
 
 def login_view(request):
     if request.method == "POST":
