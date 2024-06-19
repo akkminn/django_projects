@@ -67,25 +67,47 @@ function load_mailbox(mailbox) {
   .then(response => response.json())
   .then(emails => {
       console.log(emails);
-      emails.forEach(add_content)
-    
+      emails.forEach(email => add_content(email, mailbox))
   });
-
 };
 
-function add_content(contents) {
+function add_content(contents, mailbox) {
 
   //Creat new element
   const element = document.createElement('div');
   element.className = 'inboxEmail';
-  element.innerHTML = `<div> <strong> ${contents.sender}</strong> ${contents.subject}</div>
-                      <div> ${contents.timestamp}</div>`;
+  element.innerHTML = `<div class="mar"> <strong> ${contents.sender}</strong> ${contents.subject}</div>
+                      <div class="mar"> ${contents.timestamp}</div>`;
 
   //Check email whether it is read or not
   if (contents.read === true) {
-      element.style.background = '#D3D3D3';
+      element.style.background = '#cfcfcf';
   } else {
     element.style.background = 'white';
+  }
+
+  // Create archive/unarchive button if mailbox is not 'sent'
+  if (mailbox !== 'sent') {
+    const archiveBtn = document.createElement('button');
+    archiveBtn.className = 'btn btn-sm btn-outline-primary mx-2';
+    archiveBtn.innerHTML = contents.archived ? "Unarchive" : "Archive";
+    archiveBtn.addEventListener('click', (event) => {
+      event.stopPropagation(); // Prevent parent click event
+      fetch(`/emails/${contents.id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          archived: !contents.archived
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(() => { load_mailbox('inbox') });
+    });
+
+    // Append the archive button to the email element
+    element.appendChild(archiveBtn);
+
   }
 
   // View email via click on an email
@@ -93,31 +115,9 @@ function add_content(contents) {
     view_email(contents.id)
   });
 
-
-  // Add content to DOM
-  document.querySelector('#emails-view').append(element);
-
-  //Create archive/unchive button
-  const archiveBtn = document.createElement('button');
-  archiveBtn.className = 'btn btn-sm btn-outline-primary archivebtn';
-  archiveBtn.innerHTML = contents.archived ? "Unarchive" : "Archive";
-  archiveBtn.addEventListener('click', () => {
-    fetch(`/emails/${contents.id}`, {
-      method: 'PUT',
-      body: JSON.stringify({
-          archived: !contents.archived
-      })
-    })
-    .then(() => { load_mailbox('inbox')})
-
-  });
-
-  // Add archive button to DOM
-  document.querySelector('#emails-view').append(archiveBtn);
-
   //Create Reply button
   const replyBtn = document.createElement('button');
-  replyBtn.className = 'btn btn-sm btn-outline-primary replybtn';
+  replyBtn.className = 'btn btn-sm btn-outline-primary mx-2';
   replyBtn.innerHTML = "Reply";
   replyBtn.addEventListener('click', () => {
     compose_email();
@@ -137,8 +137,12 @@ function add_content(contents) {
   });
 
   // Add reply button to DOM
-  document.querySelector('#emails-view').append(replyBtn);
+  element.appendChild(replyBtn);
 
+  // Add content to DOM
+  document.querySelector('#emails-view').append(element);
+
+  
 };
 
 function view_email(id) {
