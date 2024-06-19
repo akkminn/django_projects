@@ -16,7 +16,7 @@
     --sticky-top-right: -18rem;
   }
 
-*, a, *::before,
+*, *::before,
 *::after {
   margin: 0;
   padding: 0;
@@ -24,6 +24,11 @@
   text-decoration: none;
   list-style: none;
   border: 0;
+}
+
+a  {
+  text-decoration: none;
+  color: var(--color-black);
 }
 
 body {
@@ -60,6 +65,7 @@ body {
 .btn:hover {
     opacity: 0.8;
   }
+
   
 .create-post input[type="text"] {
     justify-self: start;
@@ -77,8 +83,29 @@ body {
   border-radius: var(--card-border-radius);
   padding: var(--card-padding);
   margin: 1rem 0;
-  font-size: 0.85rem;
+  font-size: 1rem;
   line-height: 1.5;
+}  
+
+.feed .user {
+  display: flex;
+  gap: 1rem;
 }
 
-  
+
+.profile-pic img {
+  width: 2.7rem;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  object-fit: cover;
+  overflow: hidden;
+}
+
+.info {
+  width: 92%;
+  display: flex;
+  align-items: center;
+  margin: 0 auto;
+  justify-content: space-between;
+}
+

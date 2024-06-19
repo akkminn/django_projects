@@ -16,47 +16,55 @@
    
     
         {% for post in pages %}
-            <div class="feeds mx-auto"></div>
-        
-                <a href="{% url 'profile' post.user.id %}"><p> {{ post.user }} </p></a>
-                <div>
-                    <div class="card-text content" id="content{{ post.id }}">{{ post.content }}</div>
-                    <p> {{ post.timestamp }} </p>
+            <div class="feeds mx-auto">
+                <div class="feed">
+                    <div class="user">
+                        <div class="profile-pic">
+                            <img src="https://64.media.tumblr.com/7b28774544438d73ca8c1daad11402e0/88958e5f55a67155-fd/s250x400/a9ef3dad54f6c57a53fdeef1a793f0143a9aea27.jpg" alt="" />
+                        </div>
+                               
+                        <div class="info">
+                            <a href="{% url 'profile' post.user.id %}"><h4> {{ post.user }} </h4></a>
+                            <small> {{ post.timestamp }} </small>
+                            <span class="material-symbols-outlined">
+                                edit
+                                </span>
+                        </div>
+                    </div>
+                    <div class="" id="content{{ post.id }}">{{ post.content }}</div>
+                    <div>
+                        <div id="likes{{ post.id }}">{{ post.likes.all.count }}</div>
+                        Likes
+                    </div>
+
+                    {% if user.is_authenticated %}
+                        <button data-postid="{{ post.id }}" class="btn post-btn like">
+                            {% if user in post.likes.all %}
+                                <script>
+                                    document.querySelectorAll('button[class]').forEach(btn => {
+                                        btn.style.background = 'rgb(32, 120, 244)';
+                                        btn.style.color = 'white';
+                                    });
+                                </script>
+                                Unlike
+                            {% else %}
+                                Like
+                            {% endif %}
+                        </button>
+                    {% else %}
+                        <a class="btn like" style="margin-left: 40px; background: white; border: 1px solid rgb(32, 120, 244); color:rgb(32, 120, 244); display: inline-block;" href="{% url 'login' %}">Like</a>
+                    {% endif %}
+
+                    {% if post.user.id == user.id %}
+                        <button style="margin-left: 5px; display: inline;" data-postid="{{ post.id }}" class="btn btn-primary edit-btn edit">Edit
+                        </button>
+                    {% endif %}
                 </div>
-
-                <div>
-                    <div id="likes{{ post.id }}">{{ post.likes.all.count }}</div>
-                    Likes
-                </div>
-
-                {% if user.is_authenticated %}
-                    <button data-postid="{{ post.id }}" class="btn post-btn like">
-                        {% if user in post.likes.all %}
-                            <script>
-                                document.querySelectorAll('button[class]').forEach(btn => {
-                                    btn.style.background = 'rgb(32, 120, 244)';
-                                    btn.style.color = 'white';
-                                });
-                            </script>
-                            Unlike
-                        {% else %}
-                            Like
-                        {% endif %}
-                    </button>
-                {% else %}
-                    <a class="btn like" style="margin-left: 40px; background: white; border: 1px solid rgb(32, 120, 244); color:rgb(32, 120, 244); display: inline-block;" href="{% url 'login' %}">Like</a>
-                {% endif %}
-
-                {% if post.user.id == user.id %}
-                    <button style="margin-left: 5px; display: inline;" data-postid="{{ post.id }}" class="btn btn-primary edit-btn edit">Edit
-                    </button>
-                {% endif %}
+            </div> 
                 
-
-                {% empty %}
+            {% empty %}
                 <p>No posts available</p>
-
-            </div>   
+              
         {% endfor %}
         
     
