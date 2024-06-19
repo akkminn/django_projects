@@ -1,0 +1,91 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+    <div style="display: flex; flex-direction: column; align-items: center;">
+        <div style="font-size: 20px; font-weight: bold; margin: 20px auto;">{{user_profile.username}}</div>
+        <p style="margin: 2px auto;"> Followers:  {{ followers }} </p>
+        <p style="margin: 2px auto 15px;"> Followings:  {{ followings }} </p>
+
+        {% if user.is_authenticated %}
+            {% if user_profile.id != user.id %}
+                {% if isfollowing %}
+                    <form action="{% url 'unfollow' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="userfollow" value="{{ user_profile }}">
+                        <input type="submit" value="Unfollow" class="btn btn-primary">
+                    </form>
+                {% else %}
+                    <form action="{% url 'follow' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="userfollow" value="{{ user_profile }}">
+                        <input type="submit" value="Follow" class="btn btn-primary">
+                    </form>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <div>
+
+        {% for post in posts %}
+            <a style="font-size: 20px; font-weight: bold; color: black; text-decoration: none;" href="{% url 'profile' post.user.id %}"><p style="margin: 0 0 0 25px;"> {{ post.user }} </p></a>
+            <div style="display: flex; flex-direction: column">
+                <div style="margin: 0px 0 5px 25px; font-size: 24px; font-weight: medium" class="card-text content" id="content{{ post.id }}">{{ post.content }}</div>
+                <p style="font-size: 14px; margin: 0px 0 5px 40px"> {{ post.timestamp }} </p>
+            </div>
+
+            <div style="border-radius: 5px; display: flex; margin: 0 0 5px 40px; width: 10%; padding-left: 10px; height: 25px; border: 1px solid gray;">
+                <div style="margin-right: 10px;" id="likes{{ post.id }}">{{ post.likes.all.count }}</div>
+                Likes
+            </div>
+
+            {% if user.is_authenticated %}
+                <button data-postid="{{ post.id }}" class="btn post-btn like" style="margin-left: 40px; background: white; border: 1px solid rgb(32, 120, 244); display: inline-block;">
+                    {% if user in post.likes.all %}
+                        <script>
+                            document.querySelectorAll('button[class]').forEach(btn => {
+                                btn.style.background = 'rgb(32, 120, 244)';
+                                btn.style.color = 'white';
+                            });
+                        </script>
+                        Unlike
+                    {% else %}
+                        Like
+                    {% endif %}
+                </button>
+            {% else %}
+                <a class="btn like" style="background: white; border: 1px solid rgb(32, 120, 244); color:rgb(32, 120, 244); display: inline-block;" href="{% url 'login' %}">Like</a>
+            {% endif %}
+
+            {% if post.user.id == user.id %}
+                <button style="margin-left: 5px; display: inline;" data-postid="{{ post.id }}" class="btn btn-primary edit-btn edit">Edit
+                </button>
+            {% endif %}
+
+            <hr style="border: 1px solid gray; margin: 20px 30px;" >
+
+        {% empty %}
+            <p>No posts available</p>
+        {% endfor %}
+
+    </div>
+
+    {% if pages.has_previous %}
+    <div style="width: 100%; display: flex; justify-content: center; align-items: center;">
+        <a class="btn btn-primary" style="text-decoration: none;" href="?page={{ pages.previous_page_number }}">Previous page</a>
+    </div>
+    {% endif %}
+
+    {% if pages.has_next %}
+    <div style="width: 100%; display: flex; margin-bottom: 20px; justify-content: center; align-items: center;">
+        <a class="btn btn-primary" href="?page={{ pages.next_page_number }}">Next page</a>
+    </div>
+    {% endif %}
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/index.js' %}"></script>
+{% endblock %}
