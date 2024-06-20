@@ -23,9 +23,11 @@
                             <img src="https://64.media.tumblr.com/7b28774544438d73ca8c1daad11402e0/88958e5f55a67155-fd/s250x400/a9ef3dad54f6c57a53fdeef1a793f0143a9aea27.jpg" alt="" />
                         </div>
                                
-                        <div class="info" style="margin-top: -10px;">
-                            <a href="{% url 'profile' post.user.id %}"><h4> {{ post.user }} </h4></a>
-                            <small> {{ post.timestamp }} </small>
+                        <div class="info">
+                            <div class="d-flex flex-column">
+                                <a class="fw-semibold fs-5" href="{% url 'profile' post.user.id %}">{{ post.user }}</a>
+                                <small class="timestamp"> {{ post.timestamp }} </small>
+                            </div>
                             {% if post.user.id == user.id %}
                             <span class="material-symbols-outlined edit" data-postid="{{ post.id }}" type="submit">
                                 edit
@@ -39,10 +41,10 @@
                         Likes
                     </div>
 
-                    {% if user.is_authenticated %}
+                    <!-- {% if user.is_authenticated %}
                         <button data-postid="{{ post.id }}" class="btn post-btn like">
-                            {% if user in post.likes.all %}
-                                <script>
+                             {% if user in post.likes.all %} -->
+                                <!-- <script>
                                     document.querySelectorAll('button[class]').forEach(btn => {
                                         btn.style.background = 'rgb(32, 120, 244)';
                                         btn.style.color = 'white';
@@ -55,7 +57,19 @@
                         </button>
                     {% else %}
                         <a class="btn like" style="margin-left: 40px; background: white; border: 1px solid rgb(32, 120, 244); color:rgb(32, 120, 244); display: inline-block;" href="{% url 'login' %}">Like</a>
-                    {% endif %}
+                    {% endif %} -->
+
+                    <div class="action-button">
+                        <div class="interaction-buttton"> 
+                            <span data-postid="{{ post.id }}" class="material-symbols-outlined like" type="submit">
+                               favorite
+                            </span>
+                            <span class="material-symbols-outlined" type="submit">
+                                chat_bubble
+                            </span>
+                        </div>
+                    </div>
+                    
 
                 </div>
             </div> 

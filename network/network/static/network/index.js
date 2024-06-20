@@ -61,21 +61,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(response => response.json())
                 .then(result => {
                     if (result.error) {
-                        console.log(`Error liking post: ${result.error}`)
+                        console.log(`Error liking post: ${result.error}`);
                     } else {
-                        console.log("success like")
-                        let likes_count = document.querySelector(`#likes${btn.dataset.postid}`)
+                        console.log("success like");
 
+                        // if (user in post.likes.all()) {
+                        //     btn.classList.add('liked');
+                        // } else {
+                        //     btn.classList.remove('liked')
+                        // }
+
+                        let likes_count = document.querySelector(`#likes${btn.dataset.postid}`);
+                        
                         if (parseInt(result.likes_num) < parseInt(likes_count.innerHTML)) {
-                            btn.innerHTML = "Like"
-                            btn.style.background = 'white';
-                            btn.style.color = 'rgb(32, 120, 244)';
+                            // Update the like button to indicate it is not liked
+                            btn.classList.remove('liked');
                         } else if (parseInt(result.likes_num) > parseInt(likes_count.innerHTML)) {
-                            btn.innerHTML = "Unlike"
-                            btn.style.background = 'rgb(32, 120, 244)';
-                            btn.style.color = 'white';
+                            // Update the like button to indicate it is liked
+                            btn.classList.add('liked');
                         }
-                        document.querySelector(`#likes${btn.dataset.postid}`).innerHTML = result.likes_num
+
+                        // Update the displayed likes count
+                        likes_count.innerHTML = result.likes_num;
                     }
                 })
         }
