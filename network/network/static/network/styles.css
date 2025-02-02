@@ -78,14 +78,43 @@ body {
   }
 
 .feeds {
-  width: 50%;
+  width: 60%;
   background: var(--color-white);
   border-radius: var(--card-border-radius);
   padding: var(--card-padding);
   margin: 1rem 0;
   font-size: 1rem;
   line-height: 1.5;
-}  
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Media query for small screens */
+@media (max-width: 600px) {
+    .feeds {
+        width: 80%;
+    }
+    .create-post {
+      width: 80%;
+    }
+}
+
+@media (min-width: 601px) and (max-width: 900px) {
+    .feeds {
+        width: 70%;
+    }
+    .create-post {
+      width: 70%;
+    }
+}
+
+@media (min-width: 901px) {
+    .feeds {
+        width: 60%;
+    }
+    .create-post {
+      width: 60%;
+    }
+}
 
 .feed .user {
   display: flex;
@@ -106,12 +135,37 @@ body {
   display: flex;
   align-items: center;
   margin: 0 auto;
+  margin-top: -0.2rem;
+  margin-left: -0.5rem;
   justify-content: space-between;
 }
 
-
-.edit {
-  margin-top: -15px;
+.timestamp {
+  margin-top: -0.5rem;
+  font-size: small;
 }
 
+.edit {
+  margin-top: -10px;
+}
 
+.feed .action-button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.4rem;
+  margin: 0.6rem;
+}
+
+.interaction-buttton span {
+  margin-right: 1rem !important;
+}
+
+.liked {
+  font-variation-settings: 
+  'FILL' 1,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 24;
+  color: var(--color-danger);
+}
